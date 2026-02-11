@@ -11,10 +11,20 @@ function Square({ value, onSquareClick }) {
 
 function App() {
   const [squares, setSquares] = useState(Array(9).fill(null));
+  const [xIsNext, setxIxNext] = useState(true);
+  console.log(squares);
+
   function handleClick(i) {
+    if (squares[i] || calculateWinner(squares)) {
+      return;
+    }
     const nextSquare = squares.slice();
-    nextSquare[i] = "x";
+
+    nextSquare[i] = xIsNext ? "X" : "O";
+
     setSquares(nextSquare);
+    setxIxNext(!xIsNext);
+    console.log(squares);
   }
   function calculateWinner(squares) {
     const lines = [
@@ -27,9 +37,30 @@ function App() {
       [0, 4, 8],
       [2, 4, 6],
     ];
+
+    for (let i = 0; i < lines.length; i++) {
+      const [a, b, c] = lines[i];
+      if (
+        squares[a] &&
+        squares[a] === squares[b] &&
+        squares[a] === squares[c]
+      ) {
+        return squares[a];
+      }
+    }
+    return null;
+  }
+
+  const winner = calculateWinner(squares);
+  let status;
+  if (winner) {
+    status = "winner:" + winner;
+  } else {
+    status = "Next Move: " + (xIsNext ? "X" : "O");
   }
   return (
     <>
+      <div className="status">{status}</div>
       <div className="board-row">
         <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
         <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
